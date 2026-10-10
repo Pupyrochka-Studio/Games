@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>World Numbers</title>
+<link rel="manifest" href="manifest.json"><meta name="theme-color" content="#0f1220"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#0f1220;--card:#1a1f36;--tx:#eef1ff;--mu:#8b93b5;--ac:#5b8cff}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sans-serif;padding-bottom:30px;user-select:none;-webkit-user-select:none}
+button{touch-action:manipulation}
+header{position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);z-index:5;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #262c4a}
+.coins{font-size:20px;font-weight:800;color:#ffd24d}
+.earn{background:#263056;border:0;color:var(--tx);border-radius:10px;padding:8px 12px;font-size:16px}
+.tabs{display:flex;gap:6px;padding:10px 14px}
+.tabs button{flex:1;padding:11px 4px;border-radius:12px;border:0;background:var(--card);color:var(--mu);font-size:14px;font-weight:700}
+.tabs button.on{background:var(--ac);color:#fff}
+main{padding:0 14px}
+h3{margin:16px 0 8px;font-size:15px;color:var(--mu);font-weight:600}
+.case{background:var(--card);border-radius:16px;padding:14px;margin-bottom:10px;display:flex;gap:12px;align-items:center}
+.ico{font-size:42px;animation:fl 3s ease-in-out infinite}@keyframes fl{50%{transform:translateY(-5px) rotate(4deg)}}
+.case .i{flex:1}.case b{font-size:16px}
+.case small{display:block;color:var(--mu);font-size:11px;margin-top:3px;line-height:1.4}
+.btn{border:0;border-radius:10px;padding:9px 12px;font-weight:700;font-size:13px;background:var(--ac);color:#fff}
+.btn.g{background:#2fb36a}.btn.r{background:#e0524d}.btn.x{background:#2a3157}
+.btn:disabled{opacity:.4}
+.col{display:flex;flex-direction:column;gap:6px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pc{background:var(--card);border-radius:14px;padding:10px;border:2px solid var(--rc,#333);box-shadow:0 0 10px -4px var(--rc)}
+.plate{background:#fff;color:#111;border-radius:6px;display:flex;align-items:center;overflow:hidden;border:2px solid #111;height:44px}
+.plate .fl{background:#1747b8;color:#fff;font-size:20px;width:30px;height:100%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.plate .t{flex:1;text-align:center;font:800 15px/1 ui-monospace,Menlo,monospace;letter-spacing:.5px;white-space:nowrap}
+.plate.big{height:70px}.plate.big .fl{width:46px;font-size:30px}.plate.big .t{font-size:24px}
+.ph{background:linear-gradient(135deg,#2a3260,#10142b);border:2px solid #5a67b5;border-radius:12px;color:#fff;display:flex;align-items:center;height:44px;padding:0 8px;gap:6px}
+.ph .t{flex:1;text-align:center;font:800 13px/1 ui-monospace,Menlo,monospace;white-space:nowrap}
+.ph .pi,.ph .pf{font-size:18px}
+.ph.big{height:70px}.ph.big .t{font-size:19px}.ph.big .pi,.ph.big .pf{font-size:28px}
+.pc .m{font-size:11px;color:var(--mu);margin:7px 0 6px}
+.pc .rn{font-weight:700;color:var(--rc)}
+.pc .row{display:flex;justify-content:space-between;align-items:center}
+.pc .v{color:#ffd24d;font-weight:800}
+.empty{color:var(--mu);text-align:center;padding:24px 0;font-size:14px}
+.ov{position:fixed;inset:0;background:rgba(5,7,16,.92);z-index:20;display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center}
+.ov.on{display:flex}
+#rs{margin-top:16px;min-height:90px}
+#rs .plate,#rs .ph{width:100%;max-width:340px;margin:0 auto 12px}
+.rr{font-size:22px;font-weight:800}
+.pop{animation:pp .5s}@keyframes pp{0%{transform:scale(.6);opacity:0}100%{transform:scale(1);opacity:1}}
+.bar{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.rw{width:100vw;overflow:hidden;position:relative;padding:8px 0}
+.mk{position:absolute;left:50%;top:0;bottom:0;width:3px;background:#ffd24d;box-shadow:0 0 14px #ffd24d;z-index:2;transform:translateX(-50%)}
+.st{display:flex;will-change:transform}
+.it{flex:0 0 130px;margin-right:8px;background:var(--card);border-bottom:4px solid var(--rc);border-radius:8px;padding:8px 4px}
+.it .plate,.it .ph{height:34px}.it .plate .t{font-size:11px}.it .plate .fl{width:22px;font-size:14px}.it .ph .t{font-size:9px}.it .ph .pi{display:none}.it .ph .pf{font-size:14px}
+.pt{position:absolute;left:50%;top:50%;width:9px;height:9px;border-radius:50%;animation:pt 1s ease-out forwards;pointer-events:none}
+@keyframes pt{to{transform:translate(var(--x),var(--y)) scale(.2);opacity:0}}
+.flash{animation:fs 1s}@keyframes fs{0%{background:#fff}100%{background:rgba(5,7,16,.92)}}
+.ga{position:relative;height:70vh;width:100%;overflow:hidden;margin-top:10px}
+.cn{position:absolute;top:-50px;font-size:44px;animation:fall linear forwards}@keyframes fall{to{transform:translateY(85vh)}}
+.rb{width:100%;height:50vh;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;margin-top:12px}
+</style></head><body>
+<header><div class="coins" id="coins">0</div><button class="earn" id="sb">⚙️</button></header>
+<div class="tabs"><button id="t0"></button><button id="t1"></button><button id="t2"></button></div>
+<main id="main"></main>
+<div class="ov" id="ov"><div id="pl"></div><div id="rs"></div></div>
+<div class="ov" id="gv"></div><div class="ov" id="sv"></div>
+<script>
+const LG=['en','ru','uk','kk','zh'],LN=['English','Русский','Українська','Қазақша','中文'];
+const D={
+shop:['Shop','Магазин','Магазин','Дүкен','商店'],inv:['Inventory','Инвентарь','Інвентар','Қойма','背包'],games:['Games','Игры','Ігри','Ойындар','小游戏'],
+lang:['Language','Язык','Мова','Тіл','语言'],sound:['Sound','Звук','Звук','Дыбыс','声音'],close:['Close','Закрыть','Закрити','Жабу','关闭'],
+mycases:['My cases','Мои кейсы','Мої кейси','Менің кейстерім','我的箱子'],
+noCases:['No cases — buy some in the shop','Нет кейсов — купи в магазине','Немає кейсів — купи в магазині','Кейс жоқ — дүкеннен сатып ал','没有箱子——去商店购买'],
+items:['Numbers','Номера','Номери','Нөмірлер','号码'],value:['worth','стоимость','вартість','құны','价值'],
+noItems:['Empty — open a case','Пока пусто — открой кейс','Поки порожньо — відкрий кейс','Әзірге бос — кейсті аш','暂无——去开箱吧'],
+open:['Open','Открыть','Відкрити','Ашу','开箱'],sell:['Sell','Продать','Продати','Сату','出售'],
+sellC:['Sell common','Продать обычные','Продати звичайні','Қарапайымды сату','出售普通'],
+sellR:['Sell up to rare','Продать до редких','Продати до рідкісних','Сирекке дейін сату','出售至稀有'],
+keep:['Keep','Оставить','Залишити','Қалдыру','保留'],again:['Again','Ещё','Ще','Тағы','再开'],
+spin:['Spinning…','Крутим…','Крутимо…','Айналуда…','开箱中…'],pretty:['Pretty number ×2','Красивый номер ×2','Гарний номер ×2','Әдемі нөмір ×2','靓号 ×2'],
+stock:['In stock','В наличии','У наявності','Бар','库存'],
+broke:['Out of coins? Tap or play mini-games, or sell numbers.','Нет монет? Тапай, играй в мини-игры или продай номера.','Немає монет? Тапай, грай у міні-ігри або продай номери.','Монета жоқ па? Бас, ойна немесе нөмір сат.','没币了？点击、玩小游戏或出售号码。'],
+mg:['Mini-games · small rewards','Мини-игры · небольшие награды','Міні-ігри · невеликі нагороди','Мини-ойындар · шағын сыйақы','小游戏 · 小额奖励'],
+tapN:['Tap','Тап','Тап','Тап','点击'],
+tapD:['+1 per tap. Energy recharges slowly','+1 за тап. Энергия восстанавливается медленно','+1 за тап. Енергія відновлюється повільно','Әр басуға +1. Энергия баяу қалпына келеді','每次点击+1，能量缓慢恢复'],
+en:['Energy','Энергия','Енергія','Энергия','能量'],
+g1n:['Catch coins','Лови монеты','Лови монети','Монета ұста','接金币'],g1d:['15 s, tap the coins. Up to 20','15 с, тапай по монетам. До 20','15 с, тапай по монетах. До 20','15 с, монеталарды бас. 20-ға дейін','15秒，点击金币。最多20'],
+g2n:['Reaction','Реакция','Реакція','Реакция','反应'],g2d:['3 rounds, tap on green. Up to 15','3 раунда, жми на зелёный. До 15','3 раунди, тисни на зелений. До 15','3 раунд, жасылға бас. 15-ке дейін','3回合，绿色时点击。最多15'],
+g3n:['Guess the country','Угадай страну','Вгадай країну','Елді тап','猜国家'],g3d:['5 numbers, +4 per correct answer','5 номеров, +4 за верный ответ','5 номерів, +4 за вірну відповідь','5 нөмір, дұрыс жауапқа +4','5个号码，答对+4'],
+play:['Play','Играть','Грати','Ойнау','开始'],timeUp:['Time is up!','Время вышло!','Час вийшов!','Уақыт бітті!','时间到！'],
+wait:['Wait for green…','Жди зелёный…','Чекай зелений…','Жасылды күт…','等绿色…'],go:['TAP!','ЖМИ!','ТИСНИ!','БАС!','点！'],
+early:['Too early!','Рано!','Зарано!','Ерте!','太早了！'],done:['Done!','Готово!','Готово!','Дайын!','完成！'],
+round:['Round','Раунд','Раунд','Раунд','回合'],score:['Score','Очки','Бали','Ұпай','得分']};
+const RN=[['Common','Обычный','Звичайний','Қарапайым','普通'],['Rare','Редкий','Рідкісний','Сирек','稀有'],['Epic','Эпический','Епічний','Эпикалық','史诗'],['Legendary','Легендарный','Легендарний','Аңызға айналған','传说'],['Mythic','Мифический','Міфічний','Мифтік','神话']];
+const RAR=[{c:'#9aa4b2',v:[15,50]},{c:'#4aa8ff',v:[70,180]},{c:'#b061ff',v:[280,650]},{c:'#ffb020',v:[1200,2600]},{c:'#ff4d6d',v:[6000,14000]}];
+// [region, plate format, phone format, tier]
+const CT=[['RU','L DDD LL 77','+7 9DD DDD-DD-DD',0],['UA','LL DDDD LL','+380 DD DDD DD DD',0],['BY','DDDD LL-7','+375 29 DDD-DD-DD',0],['KZ','DDD LLL 01','+7 7DD DDD DD DD',0],['TR','34 LLL DD','+90 5DD DDD DD DD',0],['PL','LL DDDDD','+48 DDD DDD DDD',0],
+['DE','LL-LL DDD','+49 15D DDDDDDDD',1],['FR','LL-DDD-LL','+33 6 DD DD DD DD',1],['IT','LL DDD LL','+39 3DD DDD DDDD',1],['ES','DDDD LLL','+34 6DD DDD DDD',1],['GB','LL DD LLL','+44 7DDD DDDDDD',1],
+['US','LLL-DDDD','+1 (DDD) DDD-DDDD',2],['JP','300 あ DD-DD','+81 90-DDDD-DDDD',2],['CN','京A·DDDDD','+86 1DD DDDD DDDD',2],['KR','DD가 DDDD','+82 10-DDDD-DDDD',2],
+['CH','ZH DDDDDD','+41 79 DDD DD DD',3],['NO','EV DDDDD','+47 DDD DD DDD',3],['SG','SLL DDDD L','+65 9DDD DDDD',3],['AE','A DDDDD','+971 50 DDD DDDD',3],
+['MC','DDDD MC','+377 6 DD DD DD DD',4],['LI','F DDDDD','+423 7DD DD DD',4],['VA','SCV DDDD','+379 06 698 DDDD',4]];
+const CASES=[
+{id:'b',n:['Basic Case','Базовый кейс','Базовий кейс','Базалық кейс','基础箱'],p:100,i:'📦',w:[72,22,5,0.9,0.1]},
+{id:'t',n:['Tourist','Турист','Турист','Турист','游客箱'],p:500,i:'🧳',c:'#9aa4b2',m:1.2,w:[28,40,25,6,1]},
+{id:'e',n:['Euro Case','Евро-кейс','Євро-кейс','Еуро-кейс','欧洲箱'],p:300,i:'🧰',w:[40,38,17,4.6,0.4]},
+{id:'w',n:['World Case','Мировой кейс','Світовий кейс','Әлемдік кейс','世界箱'],p:800,i:'🌍',w:[14,36,32,15,3]},
+{id:'p',n:['Premium Case','Премиум кейс','Преміум кейс','Премиум кейс','高级箱'],p:2000,i:'💎',c:'#4aa8ff',w:[0,18,42,31,9]},
+{id:'g',n:['Golden Case','Золотой кейс','Золотий кейс','Алтын кейс','黄金箱'],p:5000,i:'🏆',c:'#ffb020',m:2,w:[0,5,30,50,15]},
+{id:'a',n:['Sheikh Case','Кейс шейха','Кейс шейха','Шейх кейсі','酋长箱'],p:12000,i:'🕌',c:'#2fb36a',m:3.5,w:[0,0,22,53,25]},
+{id:'d',n:['Diplomatic','Дипломатический','Дипломатичний','Дипломатиялық','外交箱'],p:30000,i:'🛂',c:'#4aa8ff',m:6,w:[0,0,10,55,35]},
+{id:'r',n:['Royal Case','Королевский кейс','Королівський кейс','Патша кейсі','皇家箱'],p:75000,i:'👑',c:'#b061ff',m:12,w:[0,0,0,55,45]},
+{id:'o',n:['Space Case','Космический кейс','Космічний кейс','Ғарыш кейсі','太空箱'],p:200000,i:'🚀',c:'#ff4d6d',m:28,w:[0,0,0,35,65]}];
+CASES.sort((a,b)=>a.p-b.p);
+const GM=[{id:'catch',i:'🪙',cd:60000},{id:'react',i:'⚡',cd:45000},{id:'guess',i:'🧭',cd:90000}];
+const EMAX=30,ER=4000;
+let S={coins:500,cases:{b:1},plates:[],n:0,lang:'en',snd:true};
+try{const x=JSON.parse(localStorage.getItem('plates_v1'));if(x&&typeof x.coins==='number')S=Object.assign(S,x)}catch(e){}
+S.plates=S.plates.filter(p=>{if(p.cc)return true;S.coins+=p.v||0;return false});
+if(S.pend){S.plates.push(S.pend);S.pend=null}
+const save=()=>{try{localStorage.setItem('plates_v1',JSON.stringify(S))}catch(e){}};
+const L=()=>Math.max(0,LG.indexOf(S.lang)),t=k=>D[k][L()],rn=r=>RN[r][L()];
+const rnd=(a,b)=>a+Math.random()*(b-a),ri=n=>Math.floor(Math.random()*n),fmt=n=>Math.round(n).toLocaleString();
+const flag=cc=>String.fromCodePoint(...[...cc].map(c=>127397+c.charCodeAt()));
+const cn=cc=>{try{return new Intl.DisplayNames([S.lang],{type:'region'}).of(cc)}catch(e){return cc}};
+const $=id=>document.getElementById(id);
+// ---- sound
+let AC;const au=()=>{try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume()}catch(e){}return AC};
+document.addEventListener('pointerdown',au);
+function bp(f,d=.1,ty='sine',v=.15,dl=0){if(!S.snd)return;const a=au();if(!a)return;try{const o=a.createOscillator(),g=a.createGain(),s=a.currentTime+dl;o.type=ty;o.frequency.value=f;g.gain.setValueAtTime(v,s);g.gain.exponentialRampToValueAtTime(.001,s+d);o.connect(g);g.connect(a.destination);o.start(s);o.stop(s+d)}catch(e){}}
+const snd={tick:()=>bp(900,.04,'square',.05),coin:()=>{bp(988,.08,'square',.07);bp(1319,.15,'square',.07,.07)},err:()=>bp(150,.2,'sawtooth',.1),click:()=>bp(600,.05,'triangle',.1),
+win:r=>[523,659,784,1047,1319,1568,2093].slice(0,3+r+(r>2?1:0)).forEach((f,i)=>bp(f,.3,'triangle',.18,i*.1))};
+// ---- items
+function gen(f,r){const pretty=Math.random()<[0,.05,.15,.3,.5][r],d=ri(9)+1;return{txt:f.replace(/[LD]/g,c=>c==='L'?'ABEKMHOPCTYX'[ri(12)]:(pretty?d:ri(10))),pretty}}
+function roll(c){
+  const tot=c.w.reduce((a,b)=>a+b,0);let x=Math.random()*tot,r=0;
+  for(;r<4;r++){x-=c.w[r];if(x<0)break}
+  const pool=CT.filter(k=>k[3]===r),k=pool[ri(pool.length)],ty=Math.random()<.5?'pl':'ph',g=gen(ty==='pl'?k[1]:k[2],r);
+  return{id:(++S.n)+'_'+Date.now()+ri(999),k:ty,cc:k[0],t:g.txt,r,v:Math.round(rnd(...RAR[r].v)*(g.pretty?2:1)*(c.m||1)),pr:g.pretty}}
+const itemHTML=(p,big,hide)=>{const f=hide?'❓':flag(p.cc);return p.k==='ph'?`<div class="ph ${big?'big':''}"><span class="pi">📱</span><span class="t">${p.t}</span><span class="pf">${f}</span></div>`:`<div class="plate ${big?'big':''}"><div class="fl">${f}</div><div class="t">${p.t}</div></div>`};
+// ---- ui
+let tab=0;
+function render(){
+  $('coins').textContent=fmt(S.coins)+' 🪙';
+  ['🛒 '+t('shop'),'🎒 '+t('inv'),'🎮 '+t('games')].forEach((s,i)=>{$('t'+i).textContent=s;$('t'+i).className=tab===i?'on':''});
+  document.documentElement.lang=S.lang;
+  const m=$('main');
+  if(tab===0){
+    m.innerHTML=CASES.map(c=>{const tot=c.w.reduce((a,b)=>a+b,0);
+      const ch=c.w.map((w,i)=>w?`<span style="color:${RAR[i].c}">${rn(i)} ${+(w/tot*100).toFixed(1)}%</span>`:'').filter(Boolean).join(' · ');
+      return `<div class="case" style="border-left:4px solid ${c.c||'#2a3157'}"><div class="ico">${c.i}</div><div class="i"><b>${c.n[L()]}</b><small>${ch}</small></div>
+      <div class="col"><button class="btn" data-b="${c.id}" data-q="1" ${S.coins<c.p?'disabled':''}>${fmt(c.p)} 🪙</button>
+      <button class="btn x" data-b="${c.id}" data-q="5" ${S.coins<c.p*5?'disabled':''}>×5</button></div></div>`}).join('')+`<div class="empty">${t('broke')}</div>`;
+  }else if(tab===2){
+    m.innerHTML=`<h3>${t('mg')}</h3><div class="case"><div class="ico">👆</div><div class="i"><b>${t('tapN')}</b><small>${t('tapD')}<br>⚡ ${t('en')}: <span id="enl"></span></small></div><button class="btn" id="tp" style="padding:18px 20px;font-size:16px">+1 🪙</button></div>`+
+    GM.map(g=>`<div class="case"><div class="ico">${g.i}</div><div class="i"><b>${t(g.id==='catch'?'g1n':g.id==='react'?'g2n':'g3n')}</b><small>${t(g.id==='catch'?'g1d':g.id==='react'?'g2d':'g3d')}</small></div><button class="btn g" id="gb_${g.id}" data-g="${g.id}"></button></div>`).join('');
+    $('tp').onpointerdown=tapGo;updGames();
+  }else{
+    const cs=CASES.filter(c=>S.cases[c.id]>0);
+    let h=`<h3>${t('mycases')}</h3>`+(cs.length?cs.map(c=>`<div class="case"><div class="ico">${c.i}</div><div class="i"><b>${c.n[L()]}</b><small>${t('stock')}: ${S.cases[c.id]}</small></div><button class="btn g" data-o="${c.id}">${t('open')}</button></div>`).join(''):`<div class="empty">${t('noCases')}</div>`);
+    const ps=[...S.plates].sort((a,b)=>b.v-a.v),total=ps.reduce((a,p)=>a+p.v,0);
+    h+=`<h3>${t('items')} (${ps.length}) · ${t('value')} ${fmt(total)} 🪙</h3>`;
+    if(ps.length)h+=`<div class="bar"><button class="btn r" data-sa="1">${t('sellC')}</button><button class="btn r" data-sa="2">${t('sellR')}</button></div><div class="grid">`+
+      ps.map(p=>`<div class="pc" style="--rc:${RAR[p.r].c}">${itemHTML(p)}<div class="m"><span class="rn">${rn(p.r)}</span>${p.pr?' ✨':''}<br>${cn(p.cc)}</div><div class="row"><span class="v">${fmt(p.v)} 🪙</span><button class="btn r" data-s="${p.id}">${t('sell')}</button></div></div>`).join('')+'</div>';
+    else h+=`<div class="empty">${t('noItems')}</div>`;
+    m.innerHTML=h;
+  }
+}
+[0,1,2].forEach(i=>$('t'+i).onclick=()=>{tab=i;snd.click();render()});
+$('main').onclick=e=>{
+  const b=e.target.closest('button');if(!b)return;const d=b.dataset;
+  if(d.b){const c=CASES.find(x=>x.id===d.b),q=+d.q,cost=c.p*q;if(S.coins>=cost){S.coins-=cost;S.cases[c.id]=(S.cases[c.id]||0)+q;save();snd.coin();render()}}
+  else if(d.o)openCase(d.o);
+  else if(d.g)startGame(d.g);
+  else if(d.s)sell(d.s);
+  else if(d.sa){const mx=+d.sa-1;let g=0;S.plates=S.plates.filter(p=>{if(p.r<=mx){g+=p.v;return false}return true});S.coins+=g;save();if(g)snd.coin();render()}
+};
+function sell(id){const i=S.plates.findIndex(p=>p.id===id);if(i<0)return;S.coins+=S.plates[i].v;S.plates.splice(i,1);save();snd.coin();render()}
+// ---- tap
+const en=()=>Math.min(EMAX,(S.en??EMAX)+(Date.now()-(S.ets||Date.now()))/ER);
+function tapGo(){const e=en();if(e<1){snd.err();return}S.en=e-1;S.ets=Date.now();S.coins++;save();bp(700+ri(200),.05,'triangle',.1);$('coins').textContent=fmt(S.coins)+' 🪙';updGames()}
+const cdl=id=>Math.max(0,((S.cd||{})[id]||0)-Date.now());
+function updGames(){const e=$('enl');if(!e)return;e.textContent=Math.floor(en())+'/'+EMAX;GM.forEach(g=>{const b=$('gb_'+g.id);if(!b)return;const l=cdl(g.id);b.disabled=!!l;b.textContent=l?Math.ceil(l/1000)+'s':t('play')})}
+setInterval(()=>{if(tab===2&&!$('gv').classList.contains('on'))updGames()},1000);
+// ---- case opening
+function burst(ov,col,n){for(let i=0;i<n;i++){const p=document.createElement('div');p.className='pt';const a=Math.random()*6.28,d=rnd(80,320);p.style.cssText=`--x:${Math.cos(a)*d}px;--y:${Math.sin(a)*d}px;background:${col}`;ov.appendChild(p);setTimeout(()=>p.remove(),1100)}}
+function openCase(id){
+  if(!(S.cases[id]>0)||$('ov').classList.contains('on'))return;
+  const c=CASES.find(x=>x.id===id);S.cases[id]--;
+  const res=roll(c);S.pend=res;save();render();
+  const ov=$('ov'),pl=$('pl'),rs=$('rs');
+  ov.className='ov on';pl.style.opacity=1;
+  rs.innerHTML=`<div style="color:var(--mu)">${t('spin')}</div>`;
+  let items='';
+  for(let i=0;i<44;i++){const p=i===36?res:roll(c);items+=`<div class="it" style="--rc:${RAR[p.r].c}">${itemHTML(p)}</div>`}
+  pl.innerHTML=`<div class="rw"><div class="mk"></div><div class="st" id="st">${items}</div></div>`;
+  const st=$('st');st.getBoundingClientRect();
+  st.style.transition='transform 5.5s cubic-bezier(.1,.65,.05,1)';
+  st.style.transform=`translateX(${-(36*138+65+rnd(-45,45))+innerWidth/2}px)`;
+  for(let k=1;k<36;k++)setTimeout(snd.tick,5500*(1-Math.sqrt(1-k/36)));
+  setTimeout(()=>{
+    S.plates.push(res);S.pend=null;save();render();
+    const R=RAR[res.r];pl.style.opacity=.3;
+    rs.innerHTML=`<div class="pop" style="filter:drop-shadow(0 0 ${10+res.r*8}px ${R.c})">${itemHTML(res,true)}</div><div class="rr pop" style="color:${R.c}">${rn(res.r)}${res.pr?' ✨':''}</div><div style="color:var(--mu);margin:4px 0 10px">${cn(res.cc)}${res.pr?' · '+t('pretty'):''}</div><div class="rr" style="color:#ffd24d">${fmt(res.v)} 🪙</div>
+    <div style="display:flex;gap:8px;justify-content:center;margin-top:16px;flex-wrap:wrap"><button class="btn r" id="a1">${t('sell')}</button><button class="btn x" id="a2">${t('keep')}</button>${S.cases[id]>0?`<button class="btn g" id="a3">${t('again')} (${S.cases[id]})</button>`:''}</div>`;
+    burst(ov,R.c,15+res.r*18);snd.win(res.r);
+    if(res.r>=3)ov.classList.add('flash');
+    $('a1').onclick=()=>{sell(res.id);ov.className='ov'};
+    $('a2').onclick=()=>{ov.className='ov'};
+    const a3=$('a3');if(a3)a3.onclick=()=>{ov.className='ov';openCase(id)};
+  },5800);
+}
+// ---- mini-games
+const gv=$('gv');
+function gEnd(id,rw,msg){S.coins+=rw;(S.cd=S.cd||{})[id]=Date.now()+GM.find(g=>g.id===id).cd;save();snd.win(rw>10?3:1);gv.innerHTML=`<div class="rr pop" style="font-size:26px">${msg}</div><div class="rr" style="color:#ffd24d;margin:14px 0">+${rw} 🪙</div><button class="btn g" id="gk">OK</button>`;$('gk').onclick=()=>{gv.classList.remove('on');render()}}
+function startGame(id){if(cdl(id))return;gv.classList.add('on');({catch:gCatch,react:gReact,guess:gGuess})[id]()}
+function gCatch(){let sc=0,tm=15;gv.innerHTML=`<div style="width:100%;display:flex;justify-content:space-between;font-weight:800;font-size:18px"><span id="gs">0 🪙</span><span id="gt">15</span></div><div id="ga" class="ga"></div>`;
+  const a=$('ga');
+  const sp=setInterval(()=>{const c=document.createElement('div');c.className='cn';c.textContent='🪙';c.style.left=ri(80)+'%';c.style.animationDuration=(1.6+Math.random()*1.2)+'s';c.onpointerdown=()=>{if(c.dead)return;c.dead=1;sc++;$('gs').textContent=Math.min(sc,20)+' 🪙';snd.coin();c.remove()};c.onanimationend=()=>c.remove();a.appendChild(c)},420);
+  const iv=setInterval(()=>{$('gt').textContent=--tm;if(tm<=0){clearInterval(iv);clearInterval(sp);gEnd('catch',Math.min(sc,20),t('timeUp'))}},1000)}
+function gReact(){let r=0,tot=0;const next=()=>{if(r>=3)return gEnd('react',tot,t('done'));
+  gv.innerHTML=`<div style="color:var(--mu)">${t('round')} ${r+1}/3</div><div id="rb" class="rb" style="background:#e0524d">${t('wait')}</div>`;
+  const b=$('rb');let go=0,t0;
+  const to=setTimeout(()=>{go=1;t0=performance.now();b.style.background='#2fb36a';b.textContent=t('go');bp(880,.15,'square',.1)},1000+Math.random()*2200);
+  b.onpointerdown=()=>{let g=0,msg;if(!go){clearTimeout(to);msg=t('early')+' +0';snd.err()}else{const ms=performance.now()-t0;g=ms<350?5:ms<500?3:1;msg=Math.round(ms)+' ms · +'+g;snd.coin()}tot+=g;r++;b.onpointerdown=null;b.textContent=msg;setTimeout(next,900)}};next()}
+function gGuess(){let r=0,tot=0;const next=()=>{if(r>=5)return gEnd('guess',tot,t('done'));
+  const k=CT[ri(CT.length)],opts=[k];while(opts.length<3){const o=CT[ri(CT.length)];if(!opts.includes(o))opts.push(o)}opts.sort(()=>Math.random()-.5);
+  const ty=Math.random()<.5?'pl':'ph';
+  gv.innerHTML=`<div style="color:var(--mu);margin-bottom:12px">${r+1}/5 · ${t('score')}: ${tot}</div><div style="width:100%;max-width:340px">${itemHTML({k:ty,t:gen(ty==='pl'?k[1]:k[2],0).txt},true,true)}</div><div class="col" style="width:100%;max-width:340px;margin-top:20px">${opts.map((o,i)=>`<button class="btn x" data-i="${i}" style="padding:14px;font-size:15px">${flag(o[0])} ${cn(o[0])}</button>`).join('')}</div>`;
+  gv.querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>{const ok=opts[+b.dataset.i]===k;if(ok){tot+=4;snd.coin()}else snd.err();b.className='btn '+(ok?'g':'r');gv.querySelectorAll('[data-i]').forEach(x=>x.onclick=null);r++;setTimeout(next,700)})};next()}
+// ---- settings
+function settings(){const sv=$('sv');sv.classList.add('on');
+  sv.innerHTML=`<div class="rr" style="margin-bottom:14px">⚙️ ${t('lang')}</div><div class="col" style="width:100%;max-width:300px">${LN.map((n,i)=>`<button class="btn ${LG[i]===S.lang?'g':'x'}" data-l="${i}" style="padding:13px;font-size:15px">${n}</button>`).join('')}</div>
+  <div class="rr" style="margin:20px 0 10px">${t('sound')}</div><button class="btn ${S.snd?'g':'x'}" id="sn" style="padding:13px 30px;font-size:15px">${S.snd?'🔊 ON':'🔇 OFF'}</button>
+  <button class="btn" id="sc" style="margin-top:24px;padding:12px 30px">${t('close')}</button>`;
+  sv.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>{S.lang=LG[+b.dataset.l];save();render();settings()});
+  $('sn').onclick=()=>{S.snd=!S.snd;save();snd.click();settings()};
+  $('sc').onclick=()=>{sv.classList.remove('on');render()}}
+$('sb').onclick=settings;
+render();
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script></body></html>
