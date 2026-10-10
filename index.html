@@ -47,6 +47,9 @@ h3{margin:16px 0 8px;font-size:15px;color:var(--mu);font-weight:600}
 .rr{font-size:22px;font-weight:800}
 .pop{animation:pp .5s}@keyframes pp{0%{transform:scale(.6);opacity:0}100%{transform:scale(1);opacity:1}}
 .bar{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.it.win{outline:3px solid #ffd24d;outline-offset:-3px}
+.toast{position:fixed;left:50%;bottom:calc(30px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#2fb36a;color:#fff;padding:12px 18px;border-radius:12px;font-weight:700;z-index:30;animation:fi .3s;text-align:center;max-width:90vw}
+@keyframes fi{from{opacity:0}}
 .rw{width:100vw;overflow:hidden;position:relative;padding:8px 0}
 .mk{position:absolute;left:50%;top:0;bottom:0;width:3px;background:#ffd24d;box-shadow:0 0 14px #ffd24d;z-index:2;transform:translateX(-50%)}
 .st{display:flex;will-change:transform}
@@ -90,7 +93,15 @@ g3n:['Guess the country','Угадай страну','Вгадай країну'
 play:['Play','Играть','Грати','Ойнау','开始'],timeUp:['Time is up!','Время вышло!','Час вийшов!','Уақыт бітті!','时间到！'],
 wait:['Wait for green…','Жди зелёный…','Чекай зелений…','Жасылды күт…','等绿色…'],go:['TAP!','ЖМИ!','ТИСНИ!','БАС!','点！'],
 early:['Too early!','Рано!','Зарано!','Ерте!','太早了！'],done:['Done!','Готово!','Готово!','Дайын!','完成！'],
-round:['Round','Раунд','Раунд','Раунд','回合'],score:['Score','Очки','Бали','Ұпай','得分']};
+round:['Round','Раунд','Раунд','Раунд','回合'],score:['Score','Очки','Бали','Ұпай','得分'],
+fAll:['All','Все','Усі','Барлығы','全部'],fPl:['Plates','Авто','Авто','Авто','车牌'],fPh:['Phones','Телефоны','Телефони','Телефон','手机号'],
+trade:['Trade 5×','Обмен 5×','Обмін 5×','Айырбас 5×','合成 5×'],claim:['Claim','Забрать','Забрати','Алу','领取'],
+dN:['Daily bonus','Ежедневный бонус','Щоденний бонус','Күнделікті бонус','每日奖励'],dD:['+50 🪙 once every 24 hours','+50 🪙 раз в 24 часа','+50 🪙 раз на 24 години','24 сағатта бір рет +50 🪙','每24小时一次 +50 🪙'],
+upEd:['Max energy +10','Макс. энергия +10','Макс. енергія +10','Макс. энергия +10','能量上限+10'],
+upR:['Recharge speed','Скорость восстановления','Швидкість відновлення','Қалпына келу жылдамдығы','恢复速度'],upRd:['Energy recharges 7% faster','Энергия восстанавливается на 7% быстрее','Енергія відновлюється на 7% швидше','Энергия 7%-ға жылдам қалпына келеді','能量恢复速度+7%'],
+upC:['Coins per tap','Монет за тап','Монет за тап','Бір басуға монета','每次点击金币'],upCd:['+1 coin per tap','+1 монета за тап','+1 монета за тап','Әр басуға +1 монета','每次点击+1金币'],
+lvl:['Lv','Ур.','Рів.','Деңг.','级'],max:['MAX','МАКС','МАКС','МАКС','满级'],
+skip:['Tap to skip','Тап — пропустить','Тап — пропустити','Өткізу үшін бас','点击跳过']};
 const RN=[['Common','Обычный','Звичайний','Қарапайым','普通'],['Rare','Редкий','Рідкісний','Сирек','稀有'],['Epic','Эпический','Епічний','Эпикалық','史诗'],['Legendary','Легендарный','Легендарний','Аңызға айналған','传说'],['Mythic','Мифический','Міфічний','Мифтік','神话']];
 const RAR=[{c:'#9aa4b2',v:[15,50]},{c:'#4aa8ff',v:[70,180]},{c:'#b061ff',v:[280,650]},{c:'#ffb020',v:[1200,2600]},{c:'#ff4d6d',v:[6000,14000]}];
 // [region, plate format, phone format, tier]
@@ -112,7 +123,7 @@ const CASES=[
 {id:'o',n:['Space Case','Космический кейс','Космічний кейс','Ғарыш кейсі','太空箱'],p:200000,i:'🚀',c:'#ff4d6d',m:28,w:[0,0,0,35,65]}];
 CASES.sort((a,b)=>a.p-b.p);
 const GM=[{id:'catch',i:'🪙',cd:60000},{id:'react',i:'⚡',cd:45000},{id:'guess',i:'🧭',cd:90000}];
-const EMAX=30,ER=4000;
+const UMAX=25,EM=()=>30+10*((S.up||{}).e||0),ERT=()=>Math.max(600,4000*Math.pow(.93,(S.up||{}).r||0)),tapV=()=>1+((S.up||{}).c||0),upCost=k=>Math.round({e:150,r:200,c:100}[k]*Math.pow(1.4,((S.up||{})[k]||0)));
 let S={coins:500,cases:{b:1},plates:[],n:0,lang:'en',snd:true};
 try{const x=JSON.parse(localStorage.getItem('plates_v1'));if(x&&typeof x.coins==='number')S=Object.assign(S,x)}catch(e){}
 S.plates=S.plates.filter(p=>{if(p.cc)return true;S.coins+=p.v||0;return false});
@@ -131,14 +142,15 @@ const snd={tick:()=>bp(900,.04,'square',.05),coin:()=>{bp(988,.08,'square',.07);
 win:r=>[523,659,784,1047,1319,1568,2093].slice(0,3+r+(r>2?1:0)).forEach((f,i)=>bp(f,.3,'triangle',.18,i*.1))};
 // ---- items
 function gen(f,r){const pretty=Math.random()<[0,.05,.15,.3,.5][r],d=ri(9)+1;return{txt:f.replace(/[LD]/g,c=>c==='L'?'ABEKMHOPCTYX'[ri(12)]:(pretty?d:ri(10))),pretty}}
-function roll(c){
+function roll(c,fr){
   const tot=c.w.reduce((a,b)=>a+b,0);let x=Math.random()*tot,r=0;
   for(;r<4;r++){x-=c.w[r];if(x<0)break}
-  const pool=CT.filter(k=>k[3]===r),k=pool[ri(pool.length)],ty=Math.random()<.5?'pl':'ph',g=gen(ty==='pl'?k[1]:k[2],r);
+  if(fr!=null)r=fr;const pool=CT.filter(k=>k[3]===r),k=pool[ri(pool.length)],ty=Math.random()<.5?'pl':'ph',g=gen(ty==='pl'?k[1]:k[2],r);
   return{id:(++S.n)+'_'+Date.now()+ri(999),k:ty,cc:k[0],t:g.txt,r,v:Math.round(rnd(...RAR[r].v)*(g.pretty?2:1)*(c.m||1)),pr:g.pretty}}
 const itemHTML=(p,big,hide)=>{const f=hide?'❓':flag(p.cc);return p.k==='ph'?`<div class="ph ${big?'big':''}"><span class="pi">📱</span><span class="t">${p.t}</span><span class="pf">${f}</span></div>`:`<div class="plate ${big?'big':''}"><div class="fl">${f}</div><div class="t">${p.t}</div></div>`};
 // ---- ui
-let tab=0;
+let tab=0,flt='all';
+function toast(m){const e=document.createElement('div');e.className='toast';e.textContent=m;document.body.appendChild(e);setTimeout(()=>e.remove(),2800)}
 function render(){
   $('coins').textContent=fmt(S.coins)+' 🪙';
   ['🛒 '+t('shop'),'🎒 '+t('inv'),'🎮 '+t('games')].forEach((s,i)=>{$('t'+i).textContent=s;$('t'+i).className=tab===i?'on':''});
@@ -151,16 +163,18 @@ function render(){
       <div class="col"><button class="btn" data-b="${c.id}" data-q="1" ${S.coins<c.p?'disabled':''}>${fmt(c.p)} 🪙</button>
       <button class="btn x" data-b="${c.id}" data-q="5" ${S.coins<c.p*5?'disabled':''}>×5</button></div></div>`}).join('')+`<div class="empty">${t('broke')}</div>`;
   }else if(tab===2){
-    m.innerHTML=`<h3>${t('mg')}</h3><div class="case"><div class="ico">👆</div><div class="i"><b>${t('tapN')}</b><small>${t('tapD')}<br>⚡ ${t('en')}: <span id="enl"></span></small></div><button class="btn" id="tp" style="padding:18px 20px;font-size:16px">+1 🪙</button></div>`+
+    m.innerHTML=`<h3>${t('mg')}</h3><div class="case"><div class="ico">👆</div><div class="i"><b>${t('tapN')}</b><small>${t('tapD')}<br>⚡ ${t('en')}: <span id="enl"></span></small></div><button class="btn" id="tp" style="padding:18px 20px;font-size:16px">+${tapV()} 🪙</button></div>${upCards()}<div class="case"><div class="ico">🎁</div><div class="i"><b>${t('dN')}</b><small>${t('dD')}</small></div><button class="btn g" id="gb_daily" data-dl="1"></button></div>`+
     GM.map(g=>`<div class="case"><div class="ico">${g.i}</div><div class="i"><b>${t(g.id==='catch'?'g1n':g.id==='react'?'g2n':'g3n')}</b><small>${t(g.id==='catch'?'g1d':g.id==='react'?'g2d':'g3d')}</small></div><button class="btn g" id="gb_${g.id}" data-g="${g.id}"></button></div>`).join('');
     $('tp').onpointerdown=tapGo;updGames();
   }else{
     const cs=CASES.filter(c=>S.cases[c.id]>0);
     let h=`<h3>${t('mycases')}</h3>`+(cs.length?cs.map(c=>`<div class="case"><div class="ico">${c.i}</div><div class="i"><b>${c.n[L()]}</b><small>${t('stock')}: ${S.cases[c.id]}</small></div><button class="btn g" data-o="${c.id}">${t('open')}</button></div>`).join(''):`<div class="empty">${t('noCases')}</div>`);
-    const ps=[...S.plates].sort((a,b)=>b.v-a.v),total=ps.reduce((a,p)=>a+p.v,0);
-    h+=`<h3>${t('items')} (${ps.length}) · ${t('value')} ${fmt(total)} 🪙</h3>`;
+    const ps=S.plates.filter(p=>flt==='all'||p.k===flt).sort((a,b)=>b.v-a.v),total=ps.reduce((a,p)=>a+p.v,0);
+    h+=`<h3>${t('items')} (${ps.length}) · ${t('value')} ${fmt(total)} 🪙</h3><div class="bar">${['all','pl','ph'].map(f=>`<button class="btn ${flt===f?'':'x'}" data-f="${f}">${t(f==='all'?'fAll':f==='pl'?'fPl':'fPh')}</button>`).join('')}</div>`;
+    const trs=[0,1,2,3].filter(r=>S.plates.filter(p=>p.r===r&&!p.lk).length>=5);
+    if(trs.length)h+=`<div class="bar">${trs.map(r=>`<button class="btn g" data-tr="${r}">${t('trade')} ${rn(r)} → ${rn(r+1)}</button>`).join('')}</div>`;
     if(ps.length)h+=`<div class="bar"><button class="btn r" data-sa="1">${t('sellC')}</button><button class="btn r" data-sa="2">${t('sellR')}</button></div><div class="grid">`+
-      ps.map(p=>`<div class="pc" style="--rc:${RAR[p.r].c}">${itemHTML(p)}<div class="m"><span class="rn">${rn(p.r)}</span>${p.pr?' ✨':''}<br>${cn(p.cc)}</div><div class="row"><span class="v">${fmt(p.v)} 🪙</span><button class="btn r" data-s="${p.id}">${t('sell')}</button></div></div>`).join('')+'</div>';
+      ps.map(p=>`<div class="pc" style="--rc:${RAR[p.r].c}">${itemHTML(p)}<div class="m"><span class="rn">${rn(p.r)}</span>${p.pr?' ✨':''}<br>${cn(p.cc)}</div><div class="row"><span class="v">${fmt(p.v)} 🪙</span><span><button class="btn x" data-k="${p.id}">${p.lk?'🔒':'🔓'}</button> <button class="btn r" data-s="${p.id}" ${p.lk?'disabled':''}>${t('sell')}</button></span></div></div>`).join('')+'</div>';
     else h+=`<div class="empty">${t('noItems')}</div>`;
     m.innerHTML=h;
   }
@@ -172,70 +186,6 @@ $('main').onclick=e=>{
   else if(d.o)openCase(d.o);
   else if(d.g)startGame(d.g);
   else if(d.s)sell(d.s);
-  else if(d.sa){const mx=+d.sa-1;let g=0;S.plates=S.plates.filter(p=>{if(p.r<=mx){g+=p.v;return false}return true});S.coins+=g;save();if(g)snd.coin();render()}
-};
-function sell(id){const i=S.plates.findIndex(p=>p.id===id);if(i<0)return;S.coins+=S.plates[i].v;S.plates.splice(i,1);save();snd.coin();render()}
-// ---- tap
-const en=()=>Math.min(EMAX,(S.en??EMAX)+(Date.now()-(S.ets||Date.now()))/ER);
-function tapGo(){const e=en();if(e<1){snd.err();return}S.en=e-1;S.ets=Date.now();S.coins++;save();bp(700+ri(200),.05,'triangle',.1);$('coins').textContent=fmt(S.coins)+' 🪙';updGames()}
-const cdl=id=>Math.max(0,((S.cd||{})[id]||0)-Date.now());
-function updGames(){const e=$('enl');if(!e)return;e.textContent=Math.floor(en())+'/'+EMAX;GM.forEach(g=>{const b=$('gb_'+g.id);if(!b)return;const l=cdl(g.id);b.disabled=!!l;b.textContent=l?Math.ceil(l/1000)+'s':t('play')})}
-setInterval(()=>{if(tab===2&&!$('gv').classList.contains('on'))updGames()},1000);
-// ---- case opening
-function burst(ov,col,n){for(let i=0;i<n;i++){const p=document.createElement('div');p.className='pt';const a=Math.random()*6.28,d=rnd(80,320);p.style.cssText=`--x:${Math.cos(a)*d}px;--y:${Math.sin(a)*d}px;background:${col}`;ov.appendChild(p);setTimeout(()=>p.remove(),1100)}}
-function openCase(id){
-  if(!(S.cases[id]>0)||$('ov').classList.contains('on'))return;
-  const c=CASES.find(x=>x.id===id);S.cases[id]--;
-  const res=roll(c);S.pend=res;save();render();
-  const ov=$('ov'),pl=$('pl'),rs=$('rs');
-  ov.className='ov on';pl.style.opacity=1;
-  rs.innerHTML=`<div style="color:var(--mu)">${t('spin')}</div>`;
-  let items='';
-  for(let i=0;i<44;i++){const p=i===36?res:roll(c);items+=`<div class="it" style="--rc:${RAR[p.r].c}">${itemHTML(p)}</div>`}
-  pl.innerHTML=`<div class="rw"><div class="mk"></div><div class="st" id="st">${items}</div></div>`;
-  const st=$('st');st.getBoundingClientRect();
-  st.style.transition='transform 5.5s cubic-bezier(.1,.65,.05,1)';
-  st.style.transform=`translateX(${-(36*138+65+rnd(-45,45))+innerWidth/2}px)`;
-  for(let k=1;k<36;k++)setTimeout(snd.tick,5500*(1-Math.sqrt(1-k/36)));
-  setTimeout(()=>{
-    S.plates.push(res);S.pend=null;save();render();
-    const R=RAR[res.r];pl.style.opacity=.3;
-    rs.innerHTML=`<div class="pop" style="filter:drop-shadow(0 0 ${10+res.r*8}px ${R.c})">${itemHTML(res,true)}</div><div class="rr pop" style="color:${R.c}">${rn(res.r)}${res.pr?' ✨':''}</div><div style="color:var(--mu);margin:4px 0 10px">${cn(res.cc)}${res.pr?' · '+t('pretty'):''}</div><div class="rr" style="color:#ffd24d">${fmt(res.v)} 🪙</div>
-    <div style="display:flex;gap:8px;justify-content:center;margin-top:16px;flex-wrap:wrap"><button class="btn r" id="a1">${t('sell')}</button><button class="btn x" id="a2">${t('keep')}</button>${S.cases[id]>0?`<button class="btn g" id="a3">${t('again')} (${S.cases[id]})</button>`:''}</div>`;
-    burst(ov,R.c,15+res.r*18);snd.win(res.r);
-    if(res.r>=3)ov.classList.add('flash');
-    $('a1').onclick=()=>{sell(res.id);ov.className='ov'};
-    $('a2').onclick=()=>{ov.className='ov'};
-    const a3=$('a3');if(a3)a3.onclick=()=>{ov.className='ov';openCase(id)};
-  },5800);
-}
-// ---- mini-games
-const gv=$('gv');
-function gEnd(id,rw,msg){S.coins+=rw;(S.cd=S.cd||{})[id]=Date.now()+GM.find(g=>g.id===id).cd;save();snd.win(rw>10?3:1);gv.innerHTML=`<div class="rr pop" style="font-size:26px">${msg}</div><div class="rr" style="color:#ffd24d;margin:14px 0">+${rw} 🪙</div><button class="btn g" id="gk">OK</button>`;$('gk').onclick=()=>{gv.classList.remove('on');render()}}
-function startGame(id){if(cdl(id))return;gv.classList.add('on');({catch:gCatch,react:gReact,guess:gGuess})[id]()}
-function gCatch(){let sc=0,tm=15;gv.innerHTML=`<div style="width:100%;display:flex;justify-content:space-between;font-weight:800;font-size:18px"><span id="gs">0 🪙</span><span id="gt">15</span></div><div id="ga" class="ga"></div>`;
-  const a=$('ga');
-  const sp=setInterval(()=>{const c=document.createElement('div');c.className='cn';c.textContent='🪙';c.style.left=ri(80)+'%';c.style.animationDuration=(1.6+Math.random()*1.2)+'s';c.onpointerdown=()=>{if(c.dead)return;c.dead=1;sc++;$('gs').textContent=Math.min(sc,20)+' 🪙';snd.coin();c.remove()};c.onanimationend=()=>c.remove();a.appendChild(c)},420);
-  const iv=setInterval(()=>{$('gt').textContent=--tm;if(tm<=0){clearInterval(iv);clearInterval(sp);gEnd('catch',Math.min(sc,20),t('timeUp'))}},1000)}
-function gReact(){let r=0,tot=0;const next=()=>{if(r>=3)return gEnd('react',tot,t('done'));
-  gv.innerHTML=`<div style="color:var(--mu)">${t('round')} ${r+1}/3</div><div id="rb" class="rb" style="background:#e0524d">${t('wait')}</div>`;
-  const b=$('rb');let go=0,t0;
-  const to=setTimeout(()=>{go=1;t0=performance.now();b.style.background='#2fb36a';b.textContent=t('go');bp(880,.15,'square',.1)},1000+Math.random()*2200);
-  b.onpointerdown=()=>{let g=0,msg;if(!go){clearTimeout(to);msg=t('early')+' +0';snd.err()}else{const ms=performance.now()-t0;g=ms<350?5:ms<500?3:1;msg=Math.round(ms)+' ms · +'+g;snd.coin()}tot+=g;r++;b.onpointerdown=null;b.textContent=msg;setTimeout(next,900)}};next()}
-function gGuess(){let r=0,tot=0;const next=()=>{if(r>=5)return gEnd('guess',tot,t('done'));
-  const k=CT[ri(CT.length)],opts=[k];while(opts.length<3){const o=CT[ri(CT.length)];if(!opts.includes(o))opts.push(o)}opts.sort(()=>Math.random()-.5);
-  const ty=Math.random()<.5?'pl':'ph';
-  gv.innerHTML=`<div style="color:var(--mu);margin-bottom:12px">${r+1}/5 · ${t('score')}: ${tot}</div><div style="width:100%;max-width:340px">${itemHTML({k:ty,t:gen(ty==='pl'?k[1]:k[2],0).txt},true,true)}</div><div class="col" style="width:100%;max-width:340px;margin-top:20px">${opts.map((o,i)=>`<button class="btn x" data-i="${i}" style="padding:14px;font-size:15px">${flag(o[0])} ${cn(o[0])}</button>`).join('')}</div>`;
-  gv.querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>{const ok=opts[+b.dataset.i]===k;if(ok){tot+=4;snd.coin()}else snd.err();b.className='btn '+(ok?'g':'r');gv.querySelectorAll('[data-i]').forEach(x=>x.onclick=null);r++;setTimeout(next,700)})};next()}
-// ---- settings
-function settings(){const sv=$('sv');sv.classList.add('on');
-  sv.innerHTML=`<div class="rr" style="margin-bottom:14px">⚙️ ${t('lang')}</div><div class="col" style="width:100%;max-width:300px">${LN.map((n,i)=>`<button class="btn ${LG[i]===S.lang?'g':'x'}" data-l="${i}" style="padding:13px;font-size:15px">${n}</button>`).join('')}</div>
-  <div class="rr" style="margin:20px 0 10px">${t('sound')}</div><button class="btn ${S.snd?'g':'x'}" id="sn" style="padding:13px 30px;font-size:15px">${S.snd?'🔊 ON':'🔇 OFF'}</button>
-  <button class="btn" id="sc" style="margin-top:24px;padding:12px 30px">${t('close')}</button>`;
-  sv.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>{S.lang=LG[+b.dataset.l];save();render();settings()});
-  $('sn').onclick=()=>{S.snd=!S.snd;save();snd.click();settings()};
-  $('sc').onclick=()=>{sv.classList.remove('on');render()}}
-$('sb').onclick=settings;
-render();
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
-</script></body></html>
+  else if(d.k){const p=S.plates.find(x=>x.id===d.k);if(p){p.lk=!p.lk;save();snd.click();render()}}
+  else if(d.f){flt=d.f;snd.click();render()}
+  else if(d.up){const k=d.up,lv=(S.up||{})[k]||0,c=upCost(k);if(lv>=UMAX)return;if(S.coins<c){snd.err();return}S.en=en();S.ets=Date.now();S.coins-=c;S.up=S.up||{};S.up[k]=l
