@@ -14,8 +14,8 @@ jobs:
           import re, base64, io, glob
           from PIL import Image, ImageDraw
           IDX = 14
-          BG = (12, 24, 78)
-          CIRCLE = (32, 62, 140)
+          BG = (255, 138, 61)
+          CIRCLE = (255, 170, 100)
           s = ''.join(open(f, encoding='utf-8').read() for f in sorted(glob.glob('images*.js')))
           imgs = re.findall(r'data:image/webp;base64,([A-Za-z0-9+/=]+)', s)
           print('found images:', len(imgs))
