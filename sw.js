@@ -1,4 +1,14 @@
-const C='wn-v3';
-self.addEventListener('install',e=>{self.skipWaiting()});
-self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C).map(x=>caches.delete(x)))).then(()=>self.clients.claim()))});
-self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;e.respondWith(fetch(e.request).then(n=>{const cp=n.clone();caches.open(C).then(c=>c.put(e.request,cp));return n}).catch(()=>caches.match(e.request).then(r=>r||caches.match('index.html'))))});
+var C="rabbit-v12",F=["./","./index.html","./manifest.json","./icon-192.png","./icon-512.png","./images1.js","./images2.js","./images3.js"];
+self.addEventListener("install",function(e){
+  e.waitUntil(caches.open(C).then(function(c){return Promise.all(F.map(function(u){return c.add(u).catch(function(){})}))}));
+  self.skipWaiting();
+});
+self.addEventListener("activate",function(e){
+  e.waitUntil(caches.keys().then(function(k){return Promise.all(k.filter(function(x){return x!==C}).map(function(x){return caches.delete(x)}))}));
+  self.clients.claim();
+});
+self.addEventListener("fetch",function(e){
+  if(e.request.method!=="GET")return;
+  e.respondWith(fetch(e.request).then(function(r){var cp=r.clone();caches.open(C).then(function(c){c.put(e.request,cp)}).catch(function(){});return r})
+    .catch(function(){return caches.match(e.request).then(function(r){return r||caches.match("./index.html")})}));
+});
